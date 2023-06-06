@@ -5,6 +5,15 @@ from html import escape
 app = Flask(__name__)
 
 
+query = """SELECT 
+                [id]
+                ,[username]
+                ,[email]
+                ,[password_hash]
+        FROM [MICROBLOG].[MICRO].[%s]
+        WHERE username = ? and password_hash = ? """
+
+
 @app.route("/", methods=['GET'])
 def index():
     return render_template('base.html')
@@ -18,13 +27,7 @@ def loginForm():
         sql = JSONFile('config', 'sql')
         conn = SQLConn(sql).conn
         cursor = conn.cursor()
-        results = cursor.execute("""SELECT 
-                [id]
-                ,[username]
-                ,[email]
-                ,[password_hash]
-        FROM [MICROBLOG].[MICRO].[users]
-        WHERE username = '"""+escape(user)+"""' and password_hash = '""" + escape(passwd) + """' ; """).fetchone()
+        results = cursor.execute(query % ("users"), [user, passwd]).fetchone()
         try:
             if results:
                 print("You are logged in")
