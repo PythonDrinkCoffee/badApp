@@ -1,0 +1,9 @@
+{
+    "drivers":"ODBC Driver 17 for SQL Server",
+    "server":"localhost\\SQLEXPRESS01",
+    "port":"",
+    "user":"PYCOFFE\\barte",
+    "password":"",
+    "database":"MICROBLOG",
+    "Trusted_Connection":"yes"
+}

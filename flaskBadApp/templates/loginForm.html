@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block loginForm %}
+<h1> Bad login form </h1>
+
+<form method="POST" action="">
+    <input type="text" name="user" placeholder="Type your name">
+    <br>
+    <input type="password" name="pass" placeholder="Type your passowrd">
+    <br>
+    <button type="submit" name="loginForm" value="submit"> Login </button>
+</form>
+{% endblock %}
