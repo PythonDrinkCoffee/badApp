@@ -36,10 +36,11 @@ def loginForm():
 
         try:
             if results:
+
                 session["LOGGED_IN"] = "You_Are_Logged"
                 print("You are logged in")
                 conn.close()
-                return redirect(url_for('loggedin'))
+                return redirect(url_for('loggedin', results=results))
             else:
                 raise ValueError("Bad login or password")
 
@@ -49,10 +50,11 @@ def loginForm():
     return render_template("loginForm.html")
 
 
-@app.route('/loggedin', methods=["GET", "POST"])
-def loggedin():
+@app.route('/loggedin/<results>', methods=["GET", "POST"])
+def loggedin(results):
     if session.get("LOGGED_IN"):
-        return render_template("loginPanel.html")
+        print(results)
+        return render_template("loginPanel.html", results=results)
     else:
         return render_template("loginForm.html")
 
