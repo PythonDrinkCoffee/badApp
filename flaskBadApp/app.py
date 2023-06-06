@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request
 from gdastudio import *
+from html import escape
 
 app = Flask(__name__)
 
@@ -17,15 +18,13 @@ def loginForm():
         sql = JSONFile('config', 'sql')
         conn = SQLConn(sql).conn
         cursor = conn.cursor()
-        results = cursor.execute("""
-        SELECT 
+        results = cursor.execute("""SELECT 
                 [id]
                 ,[username]
                 ,[email]
                 ,[password_hash]
         FROM [MICROBLOG].[MICRO].[users]
-        WHERE username = '""" + user + """' and password_hash = '""" + passwd + """';
-        """).fetchone()
+        WHERE username = '"""+escape(user)+"""' and password_hash = '""" + escape(passwd) + """' ; """).fetchone()
         try:
             if results:
                 print("You are logged in")
