@@ -1,9 +1,10 @@
 from flask import Flask, render_template, url_for, request, session, redirect
 from gdastudio import *
 from html import escape
+import secrets
 
 app = Flask(__name__)
-app.secret_key = "DupaDupa123"
+app.secret_key = secrets.token_urlsafe(32)
 
 
 @app.route("/", methods=['GET'])
@@ -30,7 +31,8 @@ def loginForm():
                 FROM [MICROBLOG].[MICRO].[%s]
                 WHERE username = \'%s\' and password_hash = \'%s\' """
         # ====================================================
-        results = cursor.execute(query % ("users", user, passwd), ).fetchone()
+        results = cursor.execute(
+            query % ("users", escape(user), escape(passwd)), ).fetchone()
 
         try:
             if results:
