@@ -10,16 +10,24 @@
         <a href="/loginForm"> Sign in </a>
         <h1> Welcome </h1>
         <br>
-        <form method="post" action="">
-            <input id="search" value="test" type="text" name="search" placeholder="search that what you need">
-            <button type="submit">Search </button>
-        </form>
+        <input id="search" value="test" type="text" name="search" placeholder="search that what you need">
+        <button id="btn" type="submit">Search </button>
+        <div id="results">
+        </div>
         {% block loginForm %} 
         {% endblock %}
         <script>
+            window.onLoad = function(){
+                testSearch.innerHTML = ''
+            }
             var search = document.getElementById('search').value
-
-            name.innerHTML = 'Data from input is: ' + search;
+            
+            var btn = document.getElementById("btn");
+            btn.addEventListener("click", () => {
+                var testSearch = document.getElementById("results")
+                testSearch.innerHTML = 'Data from input is: ' + search;
+            })
+            
         </script>
     </body>
 </html>
