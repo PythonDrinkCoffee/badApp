@@ -11,10 +11,15 @@
         <h1> Welcome </h1>
         <br>
         <form method="post" action="">
-            <input type="text" name="search" placeholder="search that what you need">
+            <input id="search" value="test" type="text" name="search" placeholder="search that what you need">
             <button type="submit">Search </button>
         </form>
         {% block loginForm %} 
         {% endblock %}
+        <script>
+            var search = document.getElementById('search').value
+
+            name.innerHTML = 'Data from input is: ' + search;
+        </script>
     </body>
 </html>
