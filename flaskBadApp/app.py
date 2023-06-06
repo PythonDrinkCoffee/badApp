@@ -28,11 +28,11 @@ def loginForm():
                         ,[username]
                         ,[email]
                         ,[password_hash]
-                FROM [MICROBLOG].[MICRO].[%s]
-                WHERE username = \'%s\' and password_hash = \'%s\' """
+                FROM [MICROBLOG].[MICRO].[users]
+                WHERE %s = ? and password_hash = ? """
         # ====================================================
         results = cursor.execute(
-            query % ("users", escape(user), escape(passwd)), ).fetchone()
+            query % ("username"), (user,  passwd)).fetchone()
 
         try:
             if results:
