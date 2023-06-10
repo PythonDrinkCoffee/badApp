@@ -2,14 +2,14 @@ from flask import Flask, render_template, url_for, request, session, redirect
 from gdastudio import *
 from html import escape
 import secrets
+from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = secrets.token_urlsafe(32)
+app.secret_key = "123123123"
 
 
 @app.route("/", methods=['GET', "POST"])
 def index():
-
     return render_template('base.html')
 
 
@@ -37,11 +37,17 @@ def loginForm():
 
         try:
             if results:
-
                 session["LOGGED_IN"] = "You_Are_Logged"
-                print("You are logged in")
+                user_id = results[0]
+                name = results[1]
+                email = results[2]
+
+                session["user_id"] = user_id
+                session["name"] = name
+                session["email"] = email
+
                 conn.close()
-                return redirect(url_for('loggedin', results=results))
+                return redirect(url_for('loggedin'))
             else:
                 raise ValueError("Bad login or password")
 
@@ -51,13 +57,81 @@ def loginForm():
     return render_template("loginForm.html")
 
 
-@app.route('/loggedin/<results>', methods=["GET", "POST"])
-def loggedin(results):
+@app.route("/profile/<string:user_id>/<string:name>/<string:email>", methods=["GET", "POST"])
+def profile(user_id, name, email):
     if session.get("LOGGED_IN"):
-        print(results)
-        return render_template("loginPanel.html", results=results)
+        if str(user_id) == str(session.get("user_id")) and name == session.get("name") and email == session.get("email"):
+            sql = JSONFile('config', 'sql')
+            conn = SQLConn(sql).conn
+            cursor = conn.cursor()
+
+            if request.method == "POST" and request.form["post"] == "send":
+                title = request.form["title"]
+                body = request.form["message"]
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                user_id = request.form["user_id"]
+
+                cursor.execute("""
+                INSERT INTO [MICROBLOG].[MICRO].[posts]
+                (
+                    [body]
+                    ,[timestamp]
+                    ,[user_id]
+                    ,[title]
+                )   VALUES (?,?,?,?)                
+                """, [body, timestamp, user_id, title])
+                cursor.commit()
+
+                posts = cursor.execute("""
+                SELECT [id]
+                    ,[body]
+                    ,[timestamp]
+                    ,[user_id]
+                    ,[title]
+                FROM [MICROBLOG].[MICRO].[posts]
+                """).fetchall()
+                conn.close()
+                return render_template("loginPanel.html", user_id=user_id, name=name, email=email, posts=posts)
+            else:
+                posts = cursor.execute("""
+                SELECT [id]
+                    ,[body]
+                    ,[timestamp]
+                    ,[user_id]
+                    ,[title]
+                FROM [MICROBLOG].[MICRO].[posts]
+                """).fetchall()
+                conn.close()
+                return render_template("loginPanel.html", user_id=user_id, name=name, email=email, posts=posts)
+        else:
+            session.clear()
+            return redirect(url_for("loginForm"))
     else:
-        return render_template("loginForm.html")
+        session.clear()
+        return redirect(url_for("loginForm"))
+
+
+@app.route('/loggedin', methods=["GET", "POST"])
+def loggedin():
+    if session.get("LOGGED_IN"):
+        user_id = session.get("user_id")
+        name = session.get("name")
+        email = session.get("email")
+
+        if name and email:
+            return redirect(url_for("profile", user_id=user_id, name=name, email=email))
+        else:
+            session.clear()
+            return redirect(url_for("loginForm"))
+    else:
+        session.clear()
+        return redirect(url_for("loginForm"))
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    session.clear()
+    return redirect(url_for("loginForm"))
 
 
 if __name__ == '__main__':

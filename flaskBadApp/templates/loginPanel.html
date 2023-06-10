@@ -7,11 +7,42 @@
         <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
-        <h1>THIS IS LOGIN PANEL </h1>
-        <p>lorem ipsum dolor sit amet</p>
-        {{ results }}
+        <div>
+            <a href="/logout"> Sign Out </a>
+        </div>
+        <h1>Hello {{ name }} </h1>
+        <h3> Whats up? </h3>
+        <div>
+            <form id="post_form" action="/profile/{{user_id}}/{{name}}/{{email}}" method="POST">
+                <div>
+                    <br>
+                    <input type="text" name="title" placeholder="Title message" required>
+                    <input name="user_id" value="{{ user_id }}" hidden>
+                    <br>
+                </div>
+                <div>
+                    <br>
+                    <textarea cols="100" rows="5" name="message" placeholder="What's up..." required></textarea>
+                    <br>
+                </div>
+                <div>
+                    <br>
+                    <button type="submit" name="post" value="send"> Leave comment </button> 
+                    <br>
+                </div>
+                
+            </form>
+        </div>
+        <div id="your_comments">
+            {% for post in posts %}
+                <div>
+                    <i> {{ post }} </i>
+                    <h3>
+                        {{ post[4] }}
+                    </h3>
+                    <p> {{ post[1] }} </p>
+                </div>
+            {% endfor %}
+        </div>
     </body>
-    <script>
-        document.cookie="username=" +{{ results[1] }} 
-    </script>
 </html>
